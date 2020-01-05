@@ -21,6 +21,16 @@ const theme = createMuiTheme({
             secondary:'#091E42'
         }
     },
+    overrides: {
+        MUIRichTextEditor: {
+            editor: {
+                height: '400px',
+                wordBreak: 'break-all',
+                overflowX: 'auto',
+                borderBottom: "1px solid lightgrey"
+            }
+        }
+    }
 });
 
 export default theme;

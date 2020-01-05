@@ -2,7 +2,7 @@ const Users = require('../models/users');
 require('dotenv').config();
 const Courses = require('../models/courses');
 const {sendEmail} = require("../helpers");
-
+const fs = require('fs');
 exports.createCourse = (req, res)=>{
     res.json({message: 'Course Created'})
     // Users.findOneAndUpdate({_id:req.params.userId},
@@ -118,4 +118,28 @@ exports.getCourse =  (req,res)=>{
     //     .catch(err => console.log(err.message));
 
 
+}
+exports.uploadVideo =  (req,res)=>{
+    try {
+        res.json({
+            success: true,
+            file: {
+                originalname:req.file.originalname,
+                filename:req.file.filename,
+                type:req.file.mimetype
+            }
+        })
+    } catch (e) {
+        console.log(e.message)
+    }
+};
+
+exports.removeVideo = (req, res) => {
+    const {videoName} = req.params;
+    fs.unlink(`static/video/${videoName}`,err => {
+        if(err){
+            console.log(err)
+        }
+       res.json({success: true})
+    });
 }
