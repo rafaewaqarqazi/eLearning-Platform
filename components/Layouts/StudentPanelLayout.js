@@ -11,7 +11,6 @@ import {ListAlt,
     Dashboard, Assignment
 } from '@material-ui/icons';
 
-import ProjectContext from '../../context/project/project-context';
 import UserContext from '../../context/user/user-context';
 import clsx from "clsx";
 import {useDrawerStyles} from "../../src/material-styles/drawerStyles";
@@ -25,13 +24,11 @@ import DrawerLink from "./DrawerLink";
 
 const StudentPanelLayout = ({children})=> {
     const classes = useDrawerStyles();
-    const projectContext = useContext(ProjectContext);
     const userContext = useContext(UserContext);
     const [open, setOpen] = useState(true);
     const [mobileOpen, setMobileOpen] = useState(false);
 
     useEffect(()=>{
-        projectContext.fetchByStudentId();
         userContext.fetchUserById()
     },[]);
     const handleDrawerOpen = ()=> {

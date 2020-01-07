@@ -1,35 +1,51 @@
 import {useRouter} from "next/router";
-import {
-    Container,
-    TextField,
-    Button,
-    Typography,
-    Box,
-    LinearProgress
-} from "@material-ui/core";
+
 import React, {useState, useEffect} from 'react';
 import {getCourse} from '../../utils/apiCalls/users'
-const CourseDetails = () => {
+import CourseDetailsLayout from '../../components/Layouts/CourseDetailsLayout'
+import CourseDetailsComponent from '../../components/course/CourseDetailsComponent'
+import {LinearProgress} from '@material-ui/core'
+const CourseDetails = ({id}) => {
     const [course, setCourse] = useState({
-        isLoading: false,
+        isLoading: true,
         course: {}
     })
     const router = useRouter();
-    const {courseId} = router.query;
-    console.log('TCL: CourseDetails -> courseId', courseId)
+    
+    
     useEffect(()=> {
-        getCourse(courseId)
+        const {courseId} = router.query;
+        console.log('TCL: CourseDetails -> courseId', courseId || id)
+        getCourse(courseId || id)
+            .then(course => {
+                if(course.success) {
+                    setCourse({
+                        isLoading: false,
+                        course: course.course
+                    })
+                }
+            })
+            .catch(error => {
+                console.log(error.message)
+            })
     },[])
     return (
-        <div >
-            <Container>
-            sfdsdf
-            </Container>
-
+        <div style={{backgroundColor: '#fff'}}>
+            <CourseDetailsLayout>
+                {
+                    course.isLoading ? <LinearProgress/> :
+                    <CourseDetailsComponent courseDetails={course.course}/>
+                }
+            </CourseDetailsLayout>
         </div>
     );
 };
 
+CourseDetails.getInitialProps = context => {
 
+    const {courseId} = context.query
+    
+    return {id:courseId};
+  };
 
 export default CourseDetails;

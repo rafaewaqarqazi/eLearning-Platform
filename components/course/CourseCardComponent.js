@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/styles';
 import {Card, CardActionArea, CardActions, CardContent, CardMedia, Button, Typography} from '@material-ui/core';
 import {serverUrl} from "../../utils/config";
 import router from 'next/router';
-// import Rating from '@material-ui/lab/Rating';
+import Rating from '@material-ui/lab/Rating';
 const useStyles = makeStyles({
   card: {
     maxWidth: 345,
@@ -38,7 +38,7 @@ const CourseCardComponent = ({course}) => {
         </CardContent>
       </CardActionArea>
       <CardActions>
-        {/* <Rating name="read-only" value={course.rating.length} readOnly /> */}
+        <Rating name="read-only" value={course.reviews.length} readOnly />
         <Typography variant="caption" color="textSecondary" noWrap>
             ({course.reviews.length})
           </Typography>
