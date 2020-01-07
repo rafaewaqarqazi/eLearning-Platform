@@ -5,7 +5,9 @@ import {fetchUserByIdAPI, createNewUserAPI} from "../../utils/apiCalls/users";
 export const getUserById = async (dispatch)=>{
     dispatch(userLoading());
     const user = await fetchUserByIdAPI();
+    if (user) {
     dispatch(addUser(user));
+    }
 };
 export const createNewUser = async (user,dispatch)=>{
     return await createNewUserAPI(user);

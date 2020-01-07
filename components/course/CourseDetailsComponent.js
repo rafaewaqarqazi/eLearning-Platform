@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import { makeStyles } from '@material-ui/styles';
 import {Grid, Container, Typography, Card, CardActionArea, CardActions, CardContent, CardMedia, Button, Hidden} from '@material-ui/core'
 import moment from 'moment'
@@ -6,6 +6,9 @@ import Rating from '@material-ui/lab/Rating';
 import MUIRichTextEditor from "mui-rte";
 import {serverUrl} from "../../utils/config";
 import UserContext from '../../context/user/user-context';
+import Link from "next/link";
+import {enrollInCourse, leaveCourse} from "../../utils/apiCalls/students";
+import SuccessSnackBar from "../snakbars/SuccessSnackBar";
 const useStyles = makeStyles(theme => ({
   root: {
     padding: theme.spacing(6),
@@ -43,12 +46,34 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const CourseDetailsComponent = ({courseDetails}) => {
+const CourseDetailsComponent = ({courseDetails, setCourse}) => {
   const classes = useStyles();
   const userContext = useContext(UserContext);
+  const [success,setSuccess] = useState(false)
   console.log('TCL: CourseDetailsComponent -> courseDetails', courseDetails)
+    const handleClickEnroll = (studentId, courseId) => {
+      enrollInCourse({studentId,courseId})
+          .then(res => {
+              if (res.success){
+                  setSuccess(true)
+                  setCourse(res.course)
+              }
+          })
+          .catch(error => console.log(error.message))
+    }
+    const handleClickLeaveCourse = (studentId, courseId) => {
+        leaveCourse({studentId,courseId})
+            .then(res => {
+                if (res.success){
+                    setSuccess(true)
+                    setCourse(res.course)
+                }
+            })
+            .catch(error => console.log(error.message))
+    }
   return (
       <div>
+          <SuccessSnackBar message={'Success'} open={success} handleClose={()=>setSuccess(false)}/>
         <Hidden xsDown >
             <div className={classes.header}>
                 <Container >
@@ -85,10 +110,26 @@ const CourseDetailsComponent = ({courseDetails}) => {
                                         </CardContent>
                                     </CardActionArea>
                                     {
-                                        !userContext.user.isLoading && userContext.user.user.role !== 'Instructor' &&
+                                        !userContext.user.isLoading && userContext.user.user.role === 'Instructor' && userContext.user.user._id === courseDetails.createdBy._id  &&
                                         <CardActions>
-                                            <Button variant='contained' color='secondary' fullWidth>Enroll Now</Button>
+                                            <Button color='primary' fullWidth>Remove Course</Button>
                                         </CardActions>
+                                    }
+                                    {
+                                        userContext.user.isLoading ?
+                                        <CardActions>
+                                            <Link href='/sign-in'>
+                                                <Button variant='contained' color='secondary' fullWidth>Enroll Now</Button>
+                                            </Link>
+                                        </CardActions>
+                                        : userContext.user.user.role === 'Student' &&
+                                        courseDetails.students.filter(student => student === userContext.user.user._id).length === 0 ?
+                                        <CardActions>
+                                            <Button variant='contained' color='secondary' onClick={()=>handleClickEnroll(userContext.user.user._id, courseDetails._id)} fullWidth>Enroll Now</Button>
+                                        </CardActions>
+                                            : <CardActions>
+                                                <Button variant='contained' color='secondary' onClick={()=>handleClickLeaveCourse(userContext.user.user._id, courseDetails._id)} fullWidth>Leave Course</Button>
+                                            </CardActions>
                                     }
                                 </Card>
                             </Hidden>

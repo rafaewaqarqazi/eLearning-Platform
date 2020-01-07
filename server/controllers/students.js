@@ -1,45 +1,93 @@
-// const Users = require('../models/users');
-// require('dotenv').config();
-// const {sendEmail} = require("../helpers");
-//
-// exports.changeEligibility = (req, res)=>{
-//     Users.findOneAndUpdate({_id:req.params.userId},
-//         {"student_details.isEligible":req.body.status}
-//         )
-//         .then(user => {
-//             const emailText = req.body.status === 'Eligible'?
-//                 `Dear Student,/nYou are Eligible for FYP, please click on the following link to start your Project./n${
-//                     process.env.CLIENT_URL
-//                 }/student/project/create`
-//                 :
-//                 'Dear Student,/n You are NOT ELIGIBLE for FYP YET. For further details please visit program office';
-//             const emailHtml =req.body.status === 'Eligible'?
-//                 `
-//                     <p>Dear Student,</p>
-//                     <p>You are Eligible for FYP, please click on the following link to start your Project.</p>
-//                     <p>${process.env.CLIENT_URL}/student/project/create</p>
-//                 `:
-//                 `
-//                 <p>Dear Student,</p>
-//                     <p>You are <b>NOT ELIGIBLE</b> for FYP YET. For further details please visit program office</p>
-//                 `;
-//
-//             const emailData = {
-//                 from: "noreply@node-react.com",
-//                 to: user.email,
-//                 subject: "Eligibility Status Update | Program Office",
-//                 text: emailText,
-//                 html: emailHtml
-//             };
-//
-//             sendEmail(emailData);
-//             res.json({message:'Success'})
-//         })
-//         .catch(err => {
-//             res.status(400).json({error:err})
-//         })
-// };
-//
+const Users = require('../models/users');
+const Courses = require('../models/courses')
+require('dotenv').config();
+const {sendEmail} = require("../helpers");
+
+exports.enrollInCourse = (req, res)=>{
+    Courses.findOneAndUpdate({_id:req.body.courseId},
+        {
+            $push: {
+                "students":req.body.studentId
+            }
+        }
+        )
+        .then(course => {
+            Users.findOne({_id: req.body.studentId})
+                .then(user => {
+                    const emailText = `Dear Student,/n You have Successfully enrolled in ${course.title} course`;
+                    const emailHtml =
+                        `
+                    <p>Dear Student,</p>
+                    <p>You have Successfully enrolled in ${course.title} course.</p>
+                    <p>enjoy your learning</p>
+                `
+
+                    const emailData = {
+                        from: "noreply@node-react.com",
+                        to: user.email,
+                        subject: "Course Enrolled",
+                        text: emailText,
+                        html: emailHtml
+                    };
+
+                    sendEmail(emailData);
+                    res.json({success:true, course})
+                })
+                .catch(err => {
+                    res.status(400).json({error:err})
+                })
+        })
+        .catch(err => {
+            res.status(400).json({error:err})
+        })
+};
+exports.leaveCourse = (req, res)=>{
+    Courses.findOneAndUpdate({_id:req.body.courseId},
+        {
+            $pull: {
+                "students":req.body.studentId
+            }
+        }
+        )
+        .then(course => {
+            Users.findOne({_id: req.body.studentId})
+                .then(user => {
+                    const emailText = `Dear Student,/n You have Successfully left the ${course.title} course`;
+                    const emailHtml =
+                        `
+                    <p>Dear Student,</p>
+                    <p>You have Successfully left the ${course.title} course.</p>
+                `
+
+                    const emailData = {
+                        from: "noreply@node-react.com",
+                        to: user.email,
+                        subject: "Course Left",
+                        text: emailText,
+                        html: emailHtml
+                    };
+
+                    sendEmail(emailData);
+                    res.json({success:true, course})
+                })
+                .catch(err => {
+                    res.status(400).json({error:err})
+                })
+        })
+        .catch(err => {
+            res.status(400).json({error:err})
+        })
+};
+exports.getStudentCourses =  (req,res)=>{
+    Courses.find({students: req.params.userId})
+        .populate('createdBy' ,'name profileImage')
+        .then(courses => {
+            res.json({success: true, courses})
+        })
+        .catch(error => {
+            console.log(error.message)
+        })
+}
 // exports.uploadVisionDocument = (req, res) => {
 //        const update = {
 //            $push:{

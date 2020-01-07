@@ -57,7 +57,7 @@ const StudentPanelLayout = ({children})=> {
                     </ListItemIcon>
                     <ListItemText primary={"My Courses"} />
                 </DrawerLink>
-                <DrawerLink href={'/courses/all'}>
+                <DrawerLink href={'/course/all'}>
                     <ListItemIcon>
                         <ListAlt className={classes.iconColor}/>
                     </ListItemIcon>

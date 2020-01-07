@@ -3,7 +3,20 @@ import {serverUrl} from "../config";
 import {isAuthenticated} from "../../auth";
 
 export const fetchUserByIdAPI = async ()=>{
-    const res = await fetch(`${serverUrl}/auth/${isAuthenticated().user._id}`,{
+    if (isAuthenticated().user) {
+        const res = await fetch(`${serverUrl}/auth/${isAuthenticated().user._id}`,{
+            method:'GET',
+            headers:{
+                Accept:'application/json',
+                "Content-Type":'application/json'
+            }
+        });
+        return await res.json();
+    } else return false
+
+};
+export const fetchAllCourses = async () => {
+    const res = await fetch(`${serverUrl}/users/courses/all`,{
         method:'GET',
         headers:{
             Accept:'application/json',
@@ -11,7 +24,7 @@ export const fetchUserByIdAPI = async ()=>{
         }
     });
     return await res.json();
-};
+}
 export const getCourse = async courseId => {
     const res = await fetch(`${serverUrl}/users/course/${courseId}`,{
         method:'GET',

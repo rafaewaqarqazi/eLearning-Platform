@@ -29,12 +29,18 @@ const CourseDetails = ({id}) => {
                 console.log(error.message)
             })
     },[])
+    const resetCourse = (uCourse) => {
+        setCourse({
+            ...course,
+            course: uCourse
+        })
+    }
     return (
         <div style={{backgroundColor: '#fff'}}>
             <CourseDetailsLayout>
                 {
                     course.isLoading ? <LinearProgress/> :
-                    <CourseDetailsComponent courseDetails={course.course}/>
+                    <CourseDetailsComponent courseDetails={course.course} setCourse={resetCourse}/>
                 }
             </CourseDetailsLayout>
         </div>

@@ -44,6 +44,16 @@ exports.getCourse = async (req, res) => {
             res.status(400).json({success: false, error:err});
         })
 }
+exports.getAllCourses = async (req, res) => {
+    Courses.find()
+        .populate('createdBy', 'name')
+        .then(courses => {
+            res.json({success: true, courses})
+        })
+        .catch(err => {
+            res.status(400).json({success: false, error:err});
+        })
+}
 exports.marksDistribution = async (req, res) =>{
     try {
         const {userId,marks} = req.body;
