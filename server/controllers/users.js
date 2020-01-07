@@ -1,4 +1,5 @@
 const User = require('../models/users');
+const Courses = require('../models/courses')
 const fs = require('fs');
 const {sendEmail} = require("../helpers");
 require('dotenv').config()
@@ -33,7 +34,16 @@ exports.userById =(req,res,next,id)=>{
             next();
         })
 };
-
+exports.getCourse = async (req, res) => {
+    Courses.findById(req.params.courseId)
+        .populate('createdBy', 'name')
+        .then(course => {
+            res.json({success: true, course})
+        })
+        .catch(err => {
+            res.status(400).json({success: false, error:err});
+        })
+}
 exports.marksDistribution = async (req, res) =>{
     try {
         const {userId,marks} = req.body;

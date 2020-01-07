@@ -163,6 +163,10 @@ export const instructorAuth = ctx => {
         ctx.res.writeHead(302, { Location: '/sign-in' });
         ctx.res.end();
         return
+    }else if (ctx.req && token && !user.user.isEmailVerified) {
+        ctx.res.writeHead(302, { Location: `/verify-email/${user.user._id}` });
+        ctx.res.end();
+        return
     }
 
     if (!token){
@@ -170,6 +174,8 @@ export const instructorAuth = ctx => {
     }
     else if (token &&  user.user.role !== 'Instructor') {
         Router.push('/sign-in')
+    } else if (!user.user.isEmailVerified && typeof window !== 'undefined'){
+        Router.push(`/verify-email/[id]`, `/verify-email/${user.user._id}`)
     }
     return token
 };

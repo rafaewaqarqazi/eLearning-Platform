@@ -17,11 +17,13 @@ const {
     fetchStudentsBarData,
     fetchAllSupervisors,
     fetchBatches,
-    fetchMarksDistribution
+    fetchMarksDistribution,
+    getCourse
 } = require('../controllers/users');
 const upload = require('../upload');
 const {requireSignin} = require('../controllers/auth');
 
+router.get('/course/:courseId', getCourse)
 router.put('/chairman/settings/marksDistribution',requireSignin,marksDistribution);
 router.put('/chairman/settings/batch/add',requireSignin,addNewBatch);
 router.put('/chairman/settings/batch/remove',requireSignin,removeBatch);

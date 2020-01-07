@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import {DropzoneArea} from 'material-ui-dropzone';
 import {
     Typography,
     Grid, LinearProgress,
@@ -12,7 +11,7 @@ import OverviewComponent from "./OverviewComponent";
 import StepperComponent from "../stepper/StepperComponent";
 import MUIRichTextEditor from "mui-rte";
 import AddContentComponent from "./AddContentComponent";
-
+import { uploadCourse } from '../../utils/apiCalls/instructor';
 const styles = theme => ({
     root: {
         width: '100%',
@@ -38,13 +37,15 @@ class CreateCourseComponent extends Component{
     constructor(props) {
         super(props);
         this.state = {
-            activeStep: 2,
+            activeStep: 0,
             loading:false,
             success:false,
             title:'',
             subtitle:'',
             description: null,
+            category: 'Development',
             videos: [],
+            coverImage:null,
             titleError:{
                 show:false,
                 message:''
@@ -56,10 +57,27 @@ class CreateCourseComponent extends Component{
             descriptionError:{
                 show:false,
                 message:''
+            },
+            videoError:{
+                show:false,
+                message:''
+            },
+            coverImageError: {
+                show: false,
+                message: ''
             }
         };
     }
+    setCategory = event => {
+        this.setState({category: event.target.value})
+    }
     setVideos = (video) => {
+        this.setState({
+            videoError:{
+                show:false,
+                message:''
+            }
+        })
         this.setState({
             videos: [...this.state.videos, video]
         })
@@ -100,13 +118,14 @@ class CreateCourseComponent extends Component{
 
     handleSuccess= ()=>{
         this.setState({
-            success:false
+            success:false,
+            loading: false
         });
         router.push('/instructor/courses')
     };
 
     handleNext = ()=> {
-        if (!isValid(this.state,this.setTitleError, this.setSubtitleError, this.setDescriptionError)){
+        if (!isValid(this.state,this.setTitleError, this.setSubtitleError, this.setDescriptionError, this.setVideoError,this.setCoverImageError)){
             this.setState(prevState =>({
                 activeStep:prevState.activeStep + 1
             }));
@@ -118,25 +137,53 @@ class CreateCourseComponent extends Component{
             activeStep:prevState.activeStep - 1
         }));
     };
+    setVideoError = () => {
+        this.setState({
+            videoError:{
+                show:true,
+                message:`Please Add Atleast 3 videos`
+            }
+        })
+    }
+    setCoverImageError = (con) => {
+        this.setState({
+            coverImageError:{
+                show: con,
+                message:con ? `Please Add Cover Image` : ''
+            }
+        })
+    }
+    setCoverImage = (image) => {
+        this.setState({
+            coverImage: image
+        })
+    }
     handleSubmit=()=>{
-        if (!isValid(this.state,this.setTitleError, this.setSubtitleError)){
+        if (!isValid(this.state,this.setTitleError, this.setSubtitleError, this.setDescriptionError, this.setVideoError)){
 
             this.setState({
                 loading:true
             });
-            let mod = [];
-            this.state.modules.map((module,i) =>{
-                mod[i]=module.label;
-            });
-            this.formData.set('majorModules',JSON.stringify(mod));
-
-            // this.context.uploadVision(this.formData,this.context.project.project._id)
-            //     .then(res=>{
-            //         this.setState({
-            //             success:true
-            //         })
-            //     })
-            //     .catch(err => console.log(err.message));
+            console.log('State', this.state)
+            const {title, subtitle, description, category, videos} = this.state
+            const data = {
+                title,
+                subtitle,
+                description: JSON.stringify(description),
+                category,
+                content: videos
+            }
+            const formData = new FormData();
+            formData.set('coverImage', this.state.coverImage);
+            formData.set('data', JSON.stringify(data))
+            uploadCourse(formData)
+                .then(res => {
+                    if (res.success) {
+                        this.setState({
+                            success:true
+                        });
+                    }
+                })
         }
 
 
@@ -212,9 +259,13 @@ class CreateCourseComponent extends Component{
                         titleError={titleError}
                         subtitle={subtitle}
                         subtitleError={subtitleError}
-                        scope={scope}
-                        scopeError={scopeError}
+                        coverImageError={this.state.coverImageError}
                         handleChange={this.handleChange}
+                        category={this.state.category}
+                        setCategory={this.setCategory}
+                        setCoverImage={this.setCoverImage}
+                        setCoverImageError={this.setCoverImageError}
+
                     />
                 );
             case 1:
@@ -235,7 +286,16 @@ class CreateCourseComponent extends Component{
                 );
             case 2:
                 return (
-                    <AddContentComponent videos={this.state.videos} setVideos={this.setVideos} removeVideoFromState={this.removeVideoFromState}/>
+                    <div>
+                        {
+                            this.state.videoError.show && <Typography color='error' variant='caption'>{this.state.videoError.message}</Typography>
+                        }
+                        <AddContentComponent
+                            videos={this.state.videos}
+                            setVideos={this.setVideos}
+                            removeVideoFromState={this.removeVideoFromState}
+                        />
+                    </div>
                 );
             default:
                 return 'Unknown step';

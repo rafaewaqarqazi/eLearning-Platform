@@ -3,8 +3,28 @@ require('dotenv').config();
 const Courses = require('../models/courses');
 const {sendEmail} = require("../helpers");
 const fs = require('fs');
+const mongoose = require('mongoose');
 exports.createCourse = (req, res)=>{
-    res.json({message: 'Course Created'})
+    try {
+        const {userId} = req.params;
+        const {data} = req.body
+        const newData = JSON.parse(data)
+        console.log('TCL: exports.createCourse -> req.body', req.body)
+        const newCourse = new Courses({
+            ...newData,
+            createdBy:  mongoose.Types.ObjectId(userId),
+            coverImage: {
+                originalname:req.file.originalname,
+                filename:req.file.filename,
+                type:req.file.mimetype
+            }
+        })
+        newCourse.save().then(course => {
+            res.json({success: true, course})
+        })
+    }catch (e) {
+        console.log(e.message)
+    }
     // Users.findOneAndUpdate({_id:req.params.userId},
     //     {"student_details.isEligible":req.body.status}
     // )
@@ -118,6 +138,16 @@ exports.getCourse =  (req,res)=>{
     //     .catch(err => console.log(err.message));
 
 
+}
+exports.getInstructorCourses =  (req,res)=>{
+    Courses.find({createdBy: mongoose.Types.ObjectId(req.params.userId)})
+    .populate('createdBy' ,'name profileImage')
+    .then(courses => {
+        res.json({success: true, courses})
+    })
+    .catch(error => {
+        console.log(error.message)
+    })
 }
 exports.uploadVideo =  (req,res)=>{
     try {
