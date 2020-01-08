@@ -4066,6 +4066,11 @@ fbjs@^1.0.0:
     setimmediate "^1.0.5"
     ua-parser-js "^0.7.18"
 
+ffprobe-static@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/ffprobe-static/-/ffprobe-static-3.0.0.tgz#479689c8a237987beca5627968f3d87429bf569d"
+  integrity sha512-LZ1Sj4RHS95t/ReZtRbCmMEWDDl7cfIMwmhNgCZcdtOgRlAHaGGOupoc166Q9AV+T7lXnUvu5HYczcsn69c6fw==
+
 figgy-pudding@^3.4.1, figgy-pudding@^3.5.1:
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/figgy-pudding/-/figgy-pudding-3.5.1.tgz#862470112901c727a0e495a80744bd5baa1d6790"
@@ -4336,6 +4341,15 @@ get-stream@^5.1.0:
 get-value@^2.0.3, get-value@^2.0.6:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/get-value/-/get-value-2.0.6.tgz#dc15ca1c672387ca76bd37ac0a395ba2042a2c28"
+
+get-video-duration@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/get-video-duration/-/get-video-duration-1.0.3.tgz#c8ef469902f5f9a2ec56ed390a65d32f7101d587"
+  integrity sha512-INT+/2eAK1z6RJ+ruWy+iond0IYDU2dWoTzCN02kU5KmT67afuNCrou1H4YnQ3XJWwt1CCcezT2bPiZ31v7AgA==
+  dependencies:
+    execa "^1.0.0"
+    ffprobe-static "^3.0.0"
+    is-stream "^1.1.0"
 
 getpass@^0.1.1:
   version "0.1.7"

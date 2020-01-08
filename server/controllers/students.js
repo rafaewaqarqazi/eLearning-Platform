@@ -9,8 +9,10 @@ exports.enrollInCourse = (req, res)=>{
             $push: {
                 "students":req.body.studentId
             }
+        },{
+            new: true
         }
-        )
+        ).populate('createdBy', 'name profileImage')
         .then(course => {
             Users.findOne({_id: req.body.studentId})
                 .then(user => {
@@ -47,8 +49,8 @@ exports.leaveCourse = (req, res)=>{
             $pull: {
                 "students":req.body.studentId
             }
-        }
-        )
+        },{new: true}
+        ).populate('createdBy', 'name profileImage')
         .then(course => {
             Users.findOne({_id: req.body.studentId})
                 .then(user => {

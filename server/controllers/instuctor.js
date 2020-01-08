@@ -4,6 +4,7 @@ const Courses = require('../models/courses');
 const {sendEmail} = require("../helpers");
 const fs = require('fs');
 const mongoose = require('mongoose');
+const { getVideoDurationInSeconds } = require('get-video-duration')
 exports.createCourse = (req, res)=>{
     try {
         const {userId} = req.params;
@@ -25,41 +26,7 @@ exports.createCourse = (req, res)=>{
     }catch (e) {
         console.log(e.message)
     }
-    // Users.findOneAndUpdate({_id:req.params.userId},
-    //     {"student_details.isEligible":req.body.status}
-    // )
-    //     .then(user => {
-    //         const emailText = req.body.status === 'Eligible'?
-    //             `Dear Student,/nYou are Eligible for FYP, please click on the following link to start your Project./n${
-    //                 process.env.CLIENT_URL
-    //             }/student/project/create`
-    //             :
-    //             'Dear Student,/n You are NOT ELIGIBLE for FYP YET. For further details please visit program office';
-    //         const emailHtml =req.body.status === 'Eligible'?
-    //             `
-    //                 <p>Dear Student,</p>
-    //                 <p>You are Eligible for FYP, please click on the following link to start your Project.</p>
-    //                 <p>${process.env.CLIENT_URL}/student/project/create</p>
-    //             `:
-    //             `
-    //             <p>Dear Student,</p>
-    //                 <p>You are <b>NOT ELIGIBLE</b> for FYP YET. For further details please visit program office</p>
-    //             `;
-    //
-    //         const emailData = {
-    //             from: "noreply@node-react.com",
-    //             to: user.email,
-    //             subject: "Eligibility Status Update | Program Office",
-    //             text: emailText,
-    //             html: emailHtml
-    //         };
-    //
-    //         sendEmail(emailData);
-    //         res.json({message:'Success'})
-    //     })
-    //     .catch(err => {
-    //         res.status(400).json({error:err})
-    //     })
+  
 };
 
 exports.updateCourse = (req, res) => {
@@ -151,14 +118,18 @@ exports.getInstructorCourses =  (req,res)=>{
 }
 exports.uploadVideo =  (req,res)=>{
     try {
-        res.json({
-            success: true,
-            file: {
-                originalname:req.file.originalname,
-                filename:req.file.filename,
-                type:req.file.mimetype
-            }
+        getVideoDurationInSeconds(`http://localhost:3000/static/video/${req.file.filename}`).then((duration) => {
+            res.json({
+                success: true,
+                file: {
+                    originalname:req.file.originalname,
+                    filename:req.file.filename,
+                    type:req.file.mimetype,
+                    duration
+                }
+            })
         })
+        
     } catch (e) {
         console.log(e.message)
     }
@@ -172,4 +143,14 @@ exports.removeVideo = (req, res) => {
         }
        res.json({success: true})
     });
+}
+exports.removeCourse =async (req, res) => {
+    try{
+        const {courseId} = req.params;
+        console.log('TCL: exports.removeCourse -> courseId', courseId)
+        const result = await Courses.remove({"_id":courseId});
+        await res.json({success: true, result});
+    }catch (e) {
+        await res.json({success:false, error: e.message})
+    }
 }

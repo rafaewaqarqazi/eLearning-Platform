@@ -1,14 +1,33 @@
 import React, {useContext, useState} from 'react';
 import { makeStyles } from '@material-ui/styles';
-import {Grid, Container, Typography, Card, CardActionArea, CardActions, CardContent, CardMedia, Button, Hidden} from '@material-ui/core'
+import {
+    Grid,
+    Container,
+    Typography,
+    Card,
+    CardActionArea,
+    CardActions,
+    CardContent,
+    CardMedia,
+    Button,
+    Hidden,
+    List,
+    ListItem,
+    ListItemText,
+    Collapse,
+    ListItemSecondaryAction
+} from '@material-ui/core'
 import moment from 'moment'
+import {ExpandLess, ExpandMore} from '@material-ui/icons';
 import Rating from '@material-ui/lab/Rating';
 import MUIRichTextEditor from "mui-rte";
 import {serverUrl} from "../../utils/config";
 import UserContext from '../../context/user/user-context';
 import Link from "next/link";
 import {enrollInCourse, leaveCourse} from "../../utils/apiCalls/students";
+import {removeCourse} from '../../utils/apiCalls/instructor'
 import SuccessSnackBar from "../snakbars/SuccessSnackBar";
+import router  from 'next/router'
 const useStyles = makeStyles(theme => ({
   root: {
     padding: theme.spacing(6),
@@ -43,6 +62,12 @@ const useStyles = makeStyles(theme => ({
   },
   media: {
     height: 180,
+  },
+  listRoot: {
+    width: '100%'
+  },
+  nested: {
+    paddingLeft: theme.spacing(4),
   }
 }));
 
@@ -50,6 +75,10 @@ const CourseDetailsComponent = ({courseDetails, setCourse}) => {
   const classes = useStyles();
   const userContext = useContext(UserContext);
   const [success,setSuccess] = useState(false)
+  const [open, setOpen] = React.useState(false);
+  const handleClick = () => {
+    setOpen(!open);
+  };
   console.log('TCL: CourseDetailsComponent -> courseDetails', courseDetails)
     const handleClickEnroll = (studentId, courseId) => {
       enrollInCourse({studentId,courseId})
@@ -70,6 +99,16 @@ const CourseDetailsComponent = ({courseDetails, setCourse}) => {
                 }
             })
             .catch(error => console.log(error.message))
+    }
+    const handleRemoveCourse = courseId => {
+        removeCourse(courseId)
+        .then(res => {
+            if (res.success){
+                setSuccess(true)
+                router.push('/instructor/courses')
+            }
+        })
+        .catch(error => console.log(error.message))
     }
   return (
       <div>
@@ -112,7 +151,7 @@ const CourseDetailsComponent = ({courseDetails, setCourse}) => {
                                     {
                                         !userContext.user.isLoading && userContext.user.user.role === 'Instructor' && userContext.user.user._id === courseDetails.createdBy._id  &&
                                         <CardActions>
-                                            <Button color='primary' fullWidth>Remove Course</Button>
+                                            <Button color='primary' fullWidth onClick={()=>handleRemoveCourse(courseDetails._id)}>Remove Course</Button>
                                         </CardActions>
                                     }
                                     {
@@ -127,8 +166,11 @@ const CourseDetailsComponent = ({courseDetails, setCourse}) => {
                                         <CardActions>
                                             <Button variant='contained' color='secondary' onClick={()=>handleClickEnroll(userContext.user.user._id, courseDetails._id)} fullWidth>Enroll Now</Button>
                                         </CardActions>
-                                            : <CardActions>
-                                                <Button variant='contained' color='secondary' onClick={()=>handleClickLeaveCourse(userContext.user.user._id, courseDetails._id)} fullWidth>Leave Course</Button>
+                                            : userContext.user.user.role === 'Student' && <CardActions>
+                                                <Button variant='outlined' color='primary' onClick={()=>handleClickLeaveCourse(userContext.user.user._id, courseDetails._id)} fullWidth>Leave Course</Button>
+                                                <Link href={`/student/courses/[courseId]`} as={`/student/courses/${courseDetails._id}`}>
+                                                    <Button variant='contained' color='secondary' fullWidth>Go to Course</Button>
+                                                </Link>
                                             </CardActions>
                                     }
                                 </Card>
@@ -167,10 +209,29 @@ const CourseDetailsComponent = ({courseDetails, setCourse}) => {
                                     </CardContent>
                                 </CardActionArea>
                                 {
-                                    !userContext.user.isLoading && userContext.user.user.role !== 'Instructor' &&
+                                    !userContext.user.isLoading && userContext.user.user.role === 'Instructor' && userContext.user.user._id === courseDetails.createdBy._id  &&
                                     <CardActions>
-                                        <Button variant='contained' color='secondary' fullWidth>Enroll Now</Button>
+                                        <Button color='primary' fullWidth onClick={()=>handleRemoveCourse(courseDetails._id)}>Remove Course</Button>
                                     </CardActions>
+                                }
+                                {
+                                    userContext.user.isLoading ?
+                                    <CardActions>
+                                        <Link href='/sign-in'>
+                                            <Button variant='contained' color='secondary' fullWidth>Enroll Now</Button>
+                                        </Link>
+                                    </CardActions>
+                                    : userContext.user.user.role === 'Student' &&
+                                    courseDetails.students.filter(student => student === userContext.user.user._id).length === 0 ?
+                                    <CardActions>
+                                        <Button variant='contained' color='secondary' onClick={()=>handleClickEnroll(userContext.user.user._id, courseDetails._id)} fullWidth>Enroll Now</Button>
+                                    </CardActions>
+                                        : userContext.user.user.role === 'Student' && <CardActions>
+                                            <Button variant='outlined' color='primary' onClick={()=>handleClickLeaveCourse(userContext.user.user._id, courseDetails._id)} fullWidth>Leave Course</Button>
+                                            <Link href={`/student/courses/[courseId]`} as={`/student/courses/${courseDetails._id}`}>
+                                                <Button variant='contained' color='secondary' fullWidth>Go to Course</Button>
+                                            </Link>
+                                        </CardActions>
                                 }
                             </Card>
                         </Hidden>
@@ -181,6 +242,24 @@ const CourseDetailsComponent = ({courseDetails, setCourse}) => {
                             readOnly={true}
                             value={courseDetails.description}
                         />
+                        <List className={classes.listRoot}>
+                            <ListItem button onClick={handleClick}>
+                                <ListItemText primary="Video Content" />
+                                {open ? <ExpandLess /> : <ExpandMore />}
+                            </ListItem>
+                            <Collapse in={open} timeout="auto" unmountOnExit>
+                                <List component="div" disablePadding>
+                                    {
+                                        courseDetails.content.map((content, index) =>
+                                            <ListItem button className={classes.nested} key={index}>
+                                                <ListItemText primary={content.title} />
+                                                <ListItemSecondaryAction>{content.video.duration || 0}</ListItemSecondaryAction>
+                                            </ListItem>
+                                        )
+                                    }
+                                </List>
+                            </Collapse>
+                            </List>
                     </Grid>
                     
                 </Grid>

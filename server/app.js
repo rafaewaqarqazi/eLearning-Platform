@@ -11,7 +11,6 @@ const cookieParser = require('cookie-parser');
 const compression = require('compression');
 const path = require('path');
 const dev = process.env.NODE_ENV !== 'production';
-
 const app = next({ dev });
 const handle = app.getRequestHandler();
 const PORT = process.env.PORT || 3000;
@@ -55,7 +54,7 @@ app.prepare()
             // console.log(path.join(__dirname,'..',''))
             app.serveStatic(req,res,file)
         });
-        server.get('/presentation/:fileName',(req,res)=>{
+        server.get('/video/:fileName',(req,res)=>{
             const file = path.join(__dirname,'..','static',req.path)
             // console.log(path.join(__dirname,'..',''))
             app.serveStatic(req,res,file)

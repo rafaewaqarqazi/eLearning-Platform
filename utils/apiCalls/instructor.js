@@ -46,3 +46,13 @@ export const removeVideo = async videoName => {
     });
     return await res.json();
 }
+export const removeCourse = async courseId => {
+    const res = await fetch(`${serverUrl}/instructor/remove/course/${courseId}`,{
+        method:'DELETE',
+        headers:{
+            Accept:'application/json',
+            Authorization:`Bearer ${isAuthenticated().token}`
+        }
+    });
+    return await res.json();
+}
