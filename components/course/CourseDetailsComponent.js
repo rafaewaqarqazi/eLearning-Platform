@@ -15,10 +15,15 @@ import {
   ListItem,
   ListItemText,
   Collapse,
-  ListItemSecondaryAction, LinearProgress
+  ListItemSecondaryAction, LinearProgress,
+    Dialog,
+    DialogContent,
+    IconButton,
+    AppBar,
+    Toolbar
 } from '@material-ui/core'
 import moment from 'moment'
-import {ExpandLess, ExpandMore} from '@material-ui/icons';
+import {Close, ExpandLess, ExpandMore, GetAppOutlined} from '@material-ui/icons';
 import Rating from '@material-ui/lab/Rating';
 import MUIRichTextEditor from "mui-rte";
 import {serverUrl} from "../../utils/config";
@@ -28,6 +33,9 @@ import {enrollInCourse, leaveCourse} from "../../utils/apiCalls/students";
 import {removeCourse} from '../../utils/apiCalls/instructor'
 import SuccessSnackBar from "../snakbars/SuccessSnackBar";
 import router  from 'next/router'
+import {PDFDownloadLink, PDFViewer} from "@react-pdf/renderer";
+import Certificate from "../certificate/Certificate";
+import CircularProgress from "@material-ui/core/CircularProgress";
 const useStyles = makeStyles(theme => ({
   root: {
     padding: theme.spacing(6),
@@ -76,6 +84,7 @@ const CourseDetailsComponent = ({courseDetails, setCourse}) => {
   const userContext = useContext(UserContext);
   const [success,setSuccess] = useState(false)
   const [open, setOpen] = React.useState(false);
+  const [certificateViewer,setCertificateViewer] = useState(false);
   const handleClick = () => {
     setOpen(!open);
   };
@@ -158,9 +167,33 @@ const CourseDetailsComponent = ({courseDetails, setCourse}) => {
                                               <Typography variant="caption" style={{display: 'flex', justifyContent: 'flex-end'}} color="textSecondary">
                                                 {getProgress(courseDetails.content)}%
                                               </Typography>
+                                                {
+                                                    getProgress(courseDetails.content) == 100 &&
+                                                        <div>
+                                                            <PDFDownloadLink
+                                                                document={
+                                                                    <Certificate
+                                                                        instructorName={courseDetails.createdBy.name}
+                                                                        courseTitle={courseDetails.title}
+                                                                        studentName={userContext.user.user.name}
+                                                                    />
+                                                                }
+
+                                                                fileName={`${courseDetails.title}-Certificate`}
+                                                                style={{textDecoration:'none'}}
+                                                            >
+                                                                {
+                                                                    ({loading}) =>
+                                                                        (loading ? <CircularProgress/> :  <Button variant='outlined' color='primary' fullWidth startIcon={<GetAppOutlined/>}>Get Certificate</Button>)
+                                                                }
+                                                            </PDFDownloadLink>
+                                                            <Button onClick={()=>setCertificateViewer(true)} style={{marginTop: '5px'}} variant='outlined' color='primary' fullWidth>View Certificate</Button>
+                                                        </div>
+                                                }
                                             </div>
                                           }
                                         </CardContent>
+
                                     </CardActionArea>
                                     {
                                         !userContext.user.isLoading && userContext.user.user.role === 'Instructor' && userContext.user.user._id === courseDetails.createdBy._id  &&
@@ -228,6 +261,27 @@ const CourseDetailsComponent = ({courseDetails, setCourse}) => {
                                           <Typography variant="caption" style={{display: 'flex', justifyContent: 'flex-end'}} color="textSecondary">
                                             {getProgress(courseDetails.content)}%
                                           </Typography>
+                                            {
+                                                getProgress(courseDetails.content) == 100 &&
+                                                <div>
+                                                    <PDFDownloadLink
+                                                        document={
+                                                            <Certificate
+                                                                instructorName={courseDetails.createdBy.name}
+                                                                courseTitle={courseDetails.title}
+                                                                studentName={userContext.user.user.name}
+                                                            />
+                                                        }
+                                                        style={{textDecoration:'none'}}
+                                                    >
+                                                        {
+                                                            ({loading}) =>
+                                                                (loading ? <CircularProgress/> :  <Button variant='outlined' color='primary' fullWidth startIcon={<GetAppOutlined/>}>Get Certificate</Button>)
+                                                        }
+                                                    </PDFDownloadLink>
+                                                    <Button onClick={()=>setCertificateViewer(true)} variant='outlined' color='primary' style={{marginTop: '5px'}} fullWidth>View Certificate</Button>
+                                                </div>
+                                            }
                                         </div>
                                       }
                                     </CardContent>
@@ -289,6 +343,27 @@ const CourseDetailsComponent = ({courseDetails, setCourse}) => {
                 </Grid>
             </Container>
         </div>
+          <Dialog open={certificateViewer} onClose={()=>setCertificateViewer(false)} fullScreen>
+              <AppBar className={classes.appBar}>
+                  <Toolbar>
+                      <Typography variant="h6" style={{flexGrow: 1}} noWrap>
+                          Auto Generated Certificate
+                      </Typography>
+                      <IconButton edge="start" color="inherit" onClick={()=>setCertificateViewer(false)} aria-label="close">
+                          <Close />
+                      </IconButton>
+                  </Toolbar>
+              </AppBar>
+              <DialogContent style={{height:500}}>
+                  <PDFViewer style={{width:'100%',height:'100%'}}>
+                      <Certificate
+                          instructorName={courseDetails.createdBy.name}
+                          courseTitle={courseDetails.title}
+                          studentName={userContext.user.user.name}
+                      />
+                  </PDFViewer>
+              </DialogContent>
+          </Dialog>
       </div>
    
   );
