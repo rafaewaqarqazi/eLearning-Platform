@@ -89,6 +89,27 @@ exports.getStudentCourses =  (req,res)=>{
         .catch(error => {
             console.log(error.message)
         })
+};
+exports.setWatchVideo = async (req, res) => {
+    try {
+        const {courseId, contentId, userId} = req.body
+        const result = await Courses.updateOne(
+          {"_id":courseId, "content._id":contentId},
+          {
+              $addToSet:{
+                  "content.$.watchedBy":userId
+              }
+          }
+        )
+        if (result.ok) {
+            await res.json({success: true, result})
+        }else {
+            await res.json({success: false, result})
+        }
+
+    }catch (e) {
+        await res.json({success: false, error: e.message})
+    }
 }
 // exports.uploadVisionDocument = (req, res) => {
 //        const update = {

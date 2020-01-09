@@ -24,9 +24,9 @@ const theme = createMuiTheme({
     overrides: {
         MUIRichTextEditor: {
             editor: {
-                height: '400px',
+                maxHeight: '500px',
                 wordBreak: 'break-all',
-                overflowX: 'auto',
+                overflowY: 'auto',
                 borderBottom: "1px solid lightgrey"
             }
         }

@@ -83,7 +83,7 @@ const StudentPanelLayout = ({children})=> {
                             </Hidden>
                             <div style={{flexGrow:1}}>
                                 <Tooltip title='eLearning Platform' placement='right'>
-                                    <Avatar alt="ELP-LOGO" src="/static/avatar/elp-logo.jpg" />
+                                    <Avatar alt="ELP-LOGO" src="/static/avatar/elp-logo.png" />
                                 </Tooltip>
                             </div>
                             <div className={classes.profile}>

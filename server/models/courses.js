@@ -9,13 +9,17 @@ const projectsSchema = new mongoose.Schema({
         type: Date,
         default: Date.now()
     },
-    updatedAt:Date,
+    updatedAt:{
+        type: Date,
+        default: Date.now()
+    },
     category: String,
     coverImage:{},
     createdBy: {type:ObjectId, ref:"Users"},
     content: [{
         title: String,
         description: String,
+        watchedBy:[{type:ObjectId, ref:"Users"}],
         video: {}
     }],
     reviews: [{

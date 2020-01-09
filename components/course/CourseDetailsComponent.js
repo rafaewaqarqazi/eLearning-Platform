@@ -1,21 +1,21 @@
 import React, {useContext, useState} from 'react';
 import { makeStyles } from '@material-ui/styles';
 import {
-    Grid,
-    Container,
-    Typography,
-    Card,
-    CardActionArea,
-    CardActions,
-    CardContent,
-    CardMedia,
-    Button,
-    Hidden,
-    List,
-    ListItem,
-    ListItemText,
-    Collapse,
-    ListItemSecondaryAction
+  Grid,
+  Container,
+  Typography,
+  Card,
+  CardActionArea,
+  CardActions,
+  CardContent,
+  CardMedia,
+  Button,
+  Hidden,
+  List,
+  ListItem,
+  ListItemText,
+  Collapse,
+  ListItemSecondaryAction, LinearProgress
 } from '@material-ui/core'
 import moment from 'moment'
 import {ExpandLess, ExpandMore} from '@material-ui/icons';
@@ -110,6 +110,13 @@ const CourseDetailsComponent = ({courseDetails, setCourse}) => {
         })
         .catch(error => console.log(error.message))
     }
+  const getProgress = (content) => {
+    let watchedCount = 0;
+    content.map(c => {
+      watchedCount += c.watchedBy.filter(user => user === userContext.user.user._id).length
+    })
+    return ((watchedCount / content.length) * 100).toFixed(0)
+  }
   return (
       <div>
           <SuccessSnackBar message={'Success'} open={success} handleClose={()=>setSuccess(false)}/>
@@ -143,9 +150,16 @@ const CourseDetailsComponent = ({courseDetails, setCourse}) => {
                                         <Typography gutterBottom variant="h5" component="h2" noWrap>
                                             {courseDetails.title}
                                         </Typography>
-                                        <Typography variant="caption" color="textSecondary" noWrap>
-                                            {courseDetails.createdBy.name}
-                                        </Typography>
+                                          {
+                                            userContext.user.user.role === 'Student' &&
+                                            courseDetails.students.filter(student => student === userContext.user.user._id).length === 1 &&
+                                            <div>
+                                              <LinearProgress variant='determinate' color='secondary' value={getProgress(courseDetails.content)} style={{height:8,borderRadius:10}}/>
+                                              <Typography variant="caption" style={{display: 'flex', justifyContent: 'flex-end'}} color="textSecondary">
+                                                {getProgress(courseDetails.content)}%
+                                              </Typography>
+                                            </div>
+                                          }
                                         </CardContent>
                                     </CardActionArea>
                                     {
@@ -168,7 +182,7 @@ const CourseDetailsComponent = ({courseDetails, setCourse}) => {
                                         </CardActions>
                                             : userContext.user.user.role === 'Student' && <CardActions>
                                                 <Button variant='outlined' color='primary' onClick={()=>handleClickLeaveCourse(userContext.user.user._id, courseDetails._id)} fullWidth>Leave Course</Button>
-                                                <Link href={`/student/courses/[courseId]`} as={`/student/courses/${courseDetails._id}`}>
+                                                <Link href={`/student/courses/[courseId]/[index]`} as={`/student/courses/${courseDetails._id}/0`}>
                                                     <Button variant='contained' color='secondary' fullWidth>Go to Course</Button>
                                                 </Link>
                                             </CardActions>
@@ -206,6 +220,16 @@ const CourseDetailsComponent = ({courseDetails, setCourse}) => {
                                         <Typography variant='subtitle1' >{`${courseDetails.students.length} students`}</Typography>
                                         <Typography variant='body1' className={classes.rightMargin}>{`Created by ${courseDetails.createdBy.name}`}</Typography>
                                         <Typography variant='body1' >{`Last Updated ${moment(courseDetails.createdAt).format('DD/MM/YY')}`}</Typography>
+                                      {
+                                        userContext.user.user.role === 'Student' &&
+                                        courseDetails.students.filter(student => student === userContext.user.user._id).length === 1 &&
+                                        <div>
+                                          <LinearProgress variant='determinate' color='secondary' value={getProgress(courseDetails.content)} style={{height:8,borderRadius:10}}/>
+                                          <Typography variant="caption" style={{display: 'flex', justifyContent: 'flex-end'}} color="textSecondary">
+                                            {getProgress(courseDetails.content)}%
+                                          </Typography>
+                                        </div>
+                                      }
                                     </CardContent>
                                 </CardActionArea>
                                 {
@@ -228,7 +252,7 @@ const CourseDetailsComponent = ({courseDetails, setCourse}) => {
                                     </CardActions>
                                         : userContext.user.user.role === 'Student' && <CardActions>
                                             <Button variant='outlined' color='primary' onClick={()=>handleClickLeaveCourse(userContext.user.user._id, courseDetails._id)} fullWidth>Leave Course</Button>
-                                            <Link href={`/student/courses/[courseId]`} as={`/student/courses/${courseDetails._id}`}>
+                                            <Link href={`/student/courses/[courseId]/[index]`} as={`/student/courses/${courseDetails._id}/0`}>
                                                 <Button variant='contained' color='secondary' fullWidth>Go to Course</Button>
                                             </Link>
                                         </CardActions>
