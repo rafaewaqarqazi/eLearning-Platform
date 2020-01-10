@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
         fontSize:24,
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'center',
+        // justifyContent: 'center',
         alignItems: 'center'
     },
     header: {
@@ -19,9 +19,10 @@ const styles = StyleSheet.create({
         padding:5
     },
     logo:{
-        width:70,
-        height:70,
-        borderRadius: 50
+        width:78,
+        height:78,
+        borderRadius: 50,
+        marginTop: 32
     },
     logoTitle:{
         marginLeft: 10
@@ -29,17 +30,16 @@ const styles = StyleSheet.create({
     divider:{
         backgroundColor:'#000',
         height:'1px',
-        marginBottom:10
+        marginTop:10
     },
     date:{
-        marginTop: 20,
         fontSize: 10,
         color: 'grey'
     },
     leftMargin: {
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'center',
+        marginTop: 150,
         alignItems: 'center'
     },
     bgImage: {
@@ -52,37 +52,41 @@ const styles = StyleSheet.create({
     },
     name: {
         fontSize: 20,
-        marginTop: 20
+        marginTop: 40
     },
     instructorName: {
-        marginTop: 50,
+        marginTop: 40,
         borderBottom: 1,
         fontSize: 14
     },
     instructor:{
         marginTop: 5,
         fontSize: 11
+    },
+    courseTitle: {
+        fontSize: 20,
+        marginTop: 20
+    },
+    desc: {
+        fontSize: 10,
+        color: 'grey',
+        marginTop: 20
     }
 });
 
 const Certificate = ({studentName,courseTitle,instructorName}) => (
     <Document >
         <Page size="A4" style={styles.body} orientation='landscape' >
-            <Image src='/static/images/certificateBg.png' style={styles.bgImage}/>
-            <View style={styles.header}>
-                <Image src='/static/avatar/elp-logo.png' style={styles.logo}/>
-                <View style={styles.logoTitle}>
-                    <Text>eLearning Platform</Text>
-                </View>
-            </View>
+            <Image src='/static/avatar/certificateBg.jpg' style={styles.bgImage}/>
             <View style={styles.leftMargin}>
                 <Text style={styles.date}>{moment(Date.now()).format('DD/MM/YY')}</Text>
                 <Text style={styles.name}>{studentName}</Text>
-                <Text style={styles.date}>Has Successfully Completed</Text>
-                <Text style={styles.date}>an online non-credit course through eLearning Platform</Text>
-                <Text style={styles.name}>{courseTitle}</Text>
+                <Text style={styles.desc}>Has Successfully Completed</Text>
+                <Text style={styles.desc}>an online non-credit course through eLearning Platform</Text>
+                <Text style={styles.courseTitle}>{courseTitle}</Text>
                 <Text style={styles.instructorName}>{instructorName}</Text>
                 <Text style={styles.instructor}>Instructor</Text>
+                <Image src='/static/avatar/elp-logo.png' style={styles.logo}/>
             </View>
 
         </Page>
