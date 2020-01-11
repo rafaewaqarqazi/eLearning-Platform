@@ -81,8 +81,8 @@ const Index = () => {
                             <Typography variant='h5' color='textPrimary' className={landingClasses.mainTitle}>
                                 Learn anything you want, anywhere
                             </Typography>
-                            <Link href='/sign-up'>
-                                <Button variant='contained' color='primary'>Start Now</Button>
+                            <Link href='/course/all'>
+                                <Button variant='contained' color='primary'>Explore</Button>
                             </Link>
                         </div>
                     </Grid>
