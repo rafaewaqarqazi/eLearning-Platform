@@ -109,6 +109,7 @@ exports.getCourse =  (req,res)=>{
 exports.getInstructorCourses =  (req,res)=>{
     Courses.find({createdBy: mongoose.Types.ObjectId(req.params.userId)})
     .populate('createdBy' ,'name profileImage')
+    .populate('reviews.reviewedBy' ,'name profileImage')
     .then(courses => {
         res.json({success: true, courses})
     })

@@ -88,22 +88,15 @@ const useStyles = makeStyles(theme => ({
             </div>
             <Divider />
             <List>
-                <Link href='/sign-in'>
-                    <ListItem button >
-                        <ListItemIcon >
-                            <Input />
-                        </ListItemIcon>
-                        <ListItemText primary={'Login'} />
-                    </ListItem>
-                </Link>
-                <Link href='/sign-up'>
-                    <ListItem button >
-                        <ListItemIcon >
-                            <Input />
-                        </ListItemIcon>
-                        <ListItemText primary={'Create an Account'} />
-                    </ListItem>
-                </Link>
+              {
+                !userContext.user.isLoading &&
+                <ListItem button onClick={handleClickMyCourses}>
+                  <ListItemIcon >
+                    <Input />
+                  </ListItemIcon>
+                  <ListItemText primary={'My Courses'} />
+                </ListItem>
+              }
             </List>
         </div>
     );

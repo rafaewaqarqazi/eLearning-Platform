@@ -8,7 +8,8 @@ const {
     enrollInCourse,
     leaveCourse,
     getStudentCourses,
-    setWatchVideo
+    setWatchVideo,
+    reviewCourse
 } = require('../controllers/students');
 const upload = require('../upload');
 const router = express.Router();
@@ -16,6 +17,7 @@ const router = express.Router();
 
 router.put('/course/enroll',requireSignin,isStudent,enrollInCourse);
 router.put('/course/leave',requireSignin,isStudent,leaveCourse);
+router.put('/course/review',requireSignin,isStudent,reviewCourse);
 router.get('/courses/:userId',requireSignin,isStudent,getStudentCourses);
 router.put('/course/video/watch', requireSignin, isStudent, setWatchVideo)
 module.exports = router;

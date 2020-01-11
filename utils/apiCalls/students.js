@@ -49,3 +49,15 @@ export const setWatchVideo = async (data) => {
     });
     return await res.json();
 };
+export const submitReview = async (data) => {
+    const res = await fetch(`${serverUrl}/students/course/review`,{
+        method:'PUT',
+        headers:{
+            Accept:'application/json',
+            "Content-Type":'application/json',
+            Authorization:`Bearer ${isAuthenticated().token}`
+        },
+        body:JSON.stringify(data)
+    });
+    return await res.json();
+};

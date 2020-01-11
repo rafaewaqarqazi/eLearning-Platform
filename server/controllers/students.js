@@ -13,6 +13,7 @@ exports.enrollInCourse = (req, res)=>{
             new: true
         }
         ).populate('createdBy', 'name profileImage')
+        .populate('reviews.reviewedBy' ,'name profileImage')
         .then(course => {
             Users.findOne({_id: req.body.studentId})
                 .then(user => {
@@ -82,7 +83,8 @@ exports.leaveCourse = (req, res)=>{
 };
 exports.getStudentCourses =  (req,res)=>{
     Courses.find({students: req.params.userId})
-        .populate('createdBy' ,'name profileImage')
+    .populate('createdBy' ,'name profileImage')
+      .populate('reviews.reviewedBy' ,'name profileImage')
         .then(courses => {
             res.json({success: true, courses})
         })
@@ -106,6 +108,32 @@ exports.setWatchVideo = async (req, res) => {
         }else {
             await res.json({success: false, result})
         }
+
+    }catch (e) {
+        await res.json({success: false, error: e.message})
+    }
+}
+exports.reviewCourse = async (req, res) => {
+    try {
+        const {courseId, rating, reviewedBy, text, createdAt} = req.body
+        const result = await Courses.findOneAndUpdate(
+          {"_id":courseId},
+          {
+                $addToSet:{
+                  "reviews":{
+                      ratings: rating,
+                      reviewedBy,
+                      text,
+                      createdAt
+                  }
+                }
+          },
+          {new: true}
+        )
+          .populate('createdBy' ,'name profileImage')
+          .populate('reviews.reviewedBy' ,'name profileImage')
+
+        await res.json({success: true, result})
 
     }catch (e) {
         await res.json({success: false, error: e.message})

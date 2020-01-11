@@ -37,6 +37,7 @@ exports.userById =(req,res,next,id)=>{
 exports.getCourse = async (req, res) => {
     Courses.findById(req.params.courseId)
         .populate('createdBy', 'name')
+      .populate('reviews.reviewedBy' ,'name profileImage')
         .then(course => {
             res.json({success: true, course})
         })
@@ -47,6 +48,7 @@ exports.getCourse = async (req, res) => {
 exports.getAllCourses = async (req, res) => {
     Courses.find()
         .populate('createdBy', 'name')
+      .populate('reviews.reviewedBy' ,'name profileImage')
         .then(courses => {
             res.json({success: true, courses})
         })

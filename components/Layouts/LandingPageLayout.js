@@ -126,21 +126,6 @@ const useStyles = makeStyles(theme => ({
                                 </a>
                             </Link>
                         </Typography>
-                        <TextField
-                            variant="outlined"
-                            label="Search"
-                            name='search'
-                            margin='dense'
-                            placeholder='Search For Courses'
-                            onChange={handleChangeSearch}
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <Search />
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
                         <Hidden xsDown >
                             <Link href='/sign-in'>
                                 <Button color="primary" className={classes.button}>Login</Button>

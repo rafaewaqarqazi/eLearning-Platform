@@ -23,9 +23,10 @@ const projectsSchema = new mongoose.Schema({
         video: {}
     }],
     reviews: [{
-        reviewedBy: [{type:ObjectId, ref:"Users"}],
+        reviewedBy: {type:ObjectId, ref:"Users"},
         text: String,
-        ratings: String
+        ratings: String,
+        createdAt: Date
     }],
     students:[{type:ObjectId, ref:"Users"}]
 });

@@ -45,12 +45,6 @@ const StudentPanelLayout = ({children})=> {
     const drawerContent = (
         <Fragment>
             <List>
-                <DrawerLink href={'/'}>
-                    <ListItemIcon>
-                        <Dashboard className={classes.iconColor}/>
-                    </ListItemIcon>
-                    <ListItemText primary={"Home"} />
-                </DrawerLink>
                 <DrawerLink href={'/student/courses'}>
                     <ListItemIcon>
                         <Assignment className={classes.iconColor}/>
