@@ -211,32 +211,6 @@ class CreateCourseComponent extends Component{
         });
         this.formData.set(e.target.name,e.target.value);
     };
-    handleModuleChange = e => {
-        this.setState({
-            currentModule:e.target.value,
-            modulesError:{
-                show:false,
-                message:''
-            }
-        });
-    };
-    handleSubmitModule = e =>{
-        e.preventDefault();
-        if (this.state.currentModule.trim() !== ''){
-            this.setState({
-                modules:[
-                    ...this.state.modules,
-                    {
-                        key:this.state.modules.length+1,
-                        label:this.state.currentModule
-                    }
-                ]
-            });
-            this.setState({currentModule:''})
-        }
-
-    };
-
     saveDescription = data => {
         const description = JSON.parse(data);
         this.setState({description})
