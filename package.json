@@ -1,5 +1,5 @@
 {
-  "name": "ugpc-server",
+  "name": "elp-server",
   "version": "1.0.0",
   "description": "Final Year Project",
   "main": "server/app.js",
