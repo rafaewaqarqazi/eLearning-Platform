@@ -57,12 +57,12 @@ const InstructorLayout = ({children})=> {
     const drawerContent = (
         <Fragment>
             <List>
-                <DrawerLink href={'/'}>
-                    <ListItemIcon>
-                        <Dashboard className={classes.iconColor}/>
-                    </ListItemIcon>
-                    <ListItemText primary={"Home"} />
-                </DrawerLink>
+                {/*<DrawerLink href={'/'}>*/}
+                {/*    <ListItemIcon>*/}
+                {/*        <Dashboard className={classes.iconColor}/>*/}
+                {/*    </ListItemIcon>*/}
+                {/*    <ListItemText primary={"Home"} />*/}
+                {/*</DrawerLink>*/}
                 <DrawerLink href={'/instructor/courses'}>
                     <ListItemIcon>
                         <SupervisorAccount className={classes.iconColor}/>

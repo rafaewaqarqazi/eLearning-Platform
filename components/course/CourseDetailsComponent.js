@@ -419,7 +419,7 @@ const CourseDetailsComponent = ({courseDetails, setCourse}) => {
                 </Collapse>
               </List>
               {
-                !userContext.user.isLoading &&
+                !userContext.user.isLoading && userContext.user.user.role === 'Student' &&
                 courseDetails.reviews.filter(review => review.reviewedBy._id === userContext.user.user._id).length === 0 &&
                 <div className={classes.addReviewContainer}>
                   <div style={{display: 'flex', alignItems: 'center'}}>

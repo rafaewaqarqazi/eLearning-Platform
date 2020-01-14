@@ -5,5 +5,5 @@ export const getCourseRatings = (reviews) => {
         ratings += parseInt(review.ratings)
         total++
     })
-    return (ratings / total).toFixed(1)
+    return reviews .length > 0 ? (ratings / total).toFixed(1) : 0
 }

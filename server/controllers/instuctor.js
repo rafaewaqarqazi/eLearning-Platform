@@ -120,10 +120,9 @@ exports.getInstructorCourses =  (req,res)=>{
 exports.uploadVideo =  (req,res)=>{
     try {
         getVideoDurationInSeconds(`http://localhost:3000/static/video/${req.file.filename}`).then((duration) => {
-          
-const minutes = Math.floor(duration / 60);
-const seconds = duration - (minutes * 60);
-res.json({
+            const minutes = Math.floor(duration / 60);
+            const seconds = Math.floor(duration - (minutes * 60));
+            res.json({
                 success: true,
                 file: {
                     originalname:req.file.originalname,
